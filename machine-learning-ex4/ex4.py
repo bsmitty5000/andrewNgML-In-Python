@@ -5,7 +5,7 @@ Created on Mon Jan 22 07:09:41 2018
 @author: Batman
 """
 import sys
-sys.path.insert(0, 'D:/machine_learning/ng_coursera')
+sys.path.insert(0, '../shared')
 
 import pandas as pd
 import numpy as np
@@ -20,45 +20,43 @@ from scipy.optimize import minimize
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
-path = os.getcwd() + '\machine-learning-ex4\ex4'
+path = os.getcwd() + '\ex4'
 
 data = loadmat(path + '\ex4data1.mat')
 weights = loadmat(path + '\ex4weights.mat')
-theta1, theta2 = weights['Theta1'], weights['Theta2']
 
 numInputs = 400
 numOutputs = 10
 nnArch = [numInputs, 25, numOutputs] #first element = # of inputs; last element = # of outputs, between are arbitrary hidden layers
-y = np.array(data['y']).flatten()
-X = np.array(data['X'])
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+y = np.array(data['y'])
+x = np.array(data['X'])
+xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.33, random_state=42)
 
 encoder = OneHotEncoder(sparse=False)
-oneHotY_train = encoder.fit_transform(y)
+oneHotYTrain = encoder.fit_transform(yTrain)
 
 thetaFlat = randInitWeightFlat(nnArch)
 
-learningRate = 0.1
+learningRate = 1.0
 
 thetaArr = rollupArrayList(thetaFlat, nnArch)
 
 #a, z = forwardPropogate(thetaArr, X)
 #J, grad = nnTop(thetaFlat, X, oneHotY, learningRate, nnArch)
-
+#
 fmin = minimize(fun=nnTop,
                 x0=thetaFlat, 
-                args=(X, oneHotY_train, learningRate, nnArch), 
+                args=(xTrain, oneHotYTrain, learningRate, nnArch), 
                 method='TNC', 
                 jac=True, 
                 options={'maxiter': 1000, 'disp': True}
                )
 
-a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), X)
+a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), xTrain)
 pred = np.argmax(a[len(a)-1], axis=1)+1
-print('Test set accuracy: {} %'.format(np.mean(pred == y.ravel())*100))
+print('Test set accuracy: {} %'.format(np.mean(pred == yTrain.ravel())*100))
 
-#a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), X_train)
-#pred = np.argmax(a[len(a)-1], axis=1)+1
-#print('Train set accuracy: {} %'.format(np.mean(pred == y_train.ravel())*100))
+a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), xTest)
+pred = np.argmax(a[len(a)-1], axis=1)+1
+print('Test set accuracy: {} %'.format(np.mean(pred == yTest.ravel())*100))
 

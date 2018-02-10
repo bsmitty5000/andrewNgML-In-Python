@@ -66,13 +66,13 @@ def costReg(thetaArr, X, y, learningRate):
     
     J = 0.0
     h = a[len(a)-1]
-    hMinusOne = h-1
+    hMinusOne = 1-h
     hMinusOne[hMinusOne < 1e-315] = 1e-315
     J = (np.log(h)*(-y)-np.log(hMinusOne)*(1-y))
         
     regFactor = 0.0
     for l in range(len(thetaArr)):
-        regFactor += (learningRate / (2 * m)) * np.sum(thetaArr[l][:,1:]**2)
+        regFactor += (learningRate / (2 * m)) * np.sum(thetaArr[l]**2)
     
     return float(np.sum(J)/m + regFactor)
 
@@ -123,8 +123,6 @@ def nnTop(thetaFlat, X, y, learningRate, nnArch):
     
     bigDelta = backPropogate(thetaList, X, y, learningRate)
     J = costReg(thetaList, X, y, learningRate)
-    print(J)
-    
     #print(J)
     unrolledGrad = flattenArrayList(bigDelta)
         
