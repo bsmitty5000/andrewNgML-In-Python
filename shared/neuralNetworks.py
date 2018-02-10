@@ -8,9 +8,13 @@ import numpy as np
 import math
 
 def sigmoid(z):
+    """ Returns sigmoid of z
+    """
     return 1 / (1 + np.exp(-z))
 
 def sigmoidGradient(z):
+    """ Returns gradient of sigmoid evaluated at z
+    """
     g = 1 / (1 + np.exp(-z))
     return g * (1 - g)
 

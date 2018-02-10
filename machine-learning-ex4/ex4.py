@@ -13,7 +13,7 @@ import scipy.optimize as opt
 import matplotlib.pyplot as plt
 import os
 
-from neuralNetworks import forwardPropogate, cost, costReg, sigmoidGradient, randInitWeightFlat, backPropogate, nnTop, flattenArrayList, rollupArrayList
+import neuralNetworks as nn
 
 from scipy.io import loadmat
 from scipy.optimize import minimize
@@ -35,16 +35,16 @@ xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.33, random_sta
 encoder = OneHotEncoder(sparse=False)
 oneHotYTrain = encoder.fit_transform(yTrain)
 
-thetaFlat = randInitWeightFlat(nnArch)
+thetaFlat = nn.randInitWeightFlat(nnArch)
 
 learningRate = 1.0
 
-thetaArr = rollupArrayList(thetaFlat, nnArch)
+thetaArr = nn.rollupArrayList(thetaFlat, nnArch)
 
-#a, z = forwardPropogate(thetaArr, X)
-#J, grad = nnTop(thetaFlat, X, oneHotY, learningRate, nnArch)
+#a, z = nn.forwardPropogate(thetaArr, X)
+#J, grad = nn.nnTop(thetaFlat, X, oneHotY, learningRate, nnArch)
 #
-fmin = minimize(fun=nnTop,
+fmin = minimize(fun=nn.nnTop,
                 x0=thetaFlat, 
                 args=(xTrain, oneHotYTrain, learningRate, nnArch), 
                 method='TNC', 
@@ -52,11 +52,11 @@ fmin = minimize(fun=nnTop,
                 options={'maxiter': 1000, 'disp': True}
                )
 
-a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), xTrain)
+a, z = nn.forwardPropogate(nn.rollupArrayList(fmin['x'], nnArch), xTrain)
 pred = np.argmax(a[len(a)-1], axis=1)+1
 print('Test set accuracy: {} %'.format(np.mean(pred == yTrain.ravel())*100))
 
-a, z = forwardPropogate(rollupArrayList(fmin['x'], nnArch), xTest)
+a, z = nn.forwardPropogate(nn.rollupArrayList(fmin['x'], nnArch), xTest)
 pred = np.argmax(a[len(a)-1], axis=1)+1
 print('Test set accuracy: {} %'.format(np.mean(pred == yTest.ravel())*100))
 
