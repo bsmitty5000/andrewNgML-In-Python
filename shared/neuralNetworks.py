@@ -138,6 +138,8 @@ def costReg(thetaArr, X, y, learningRate):
     
     J = 0.0
     h = a[len(a)-1]
+    
+    #add this to prevent log(0) in the case where h[] = 1
     hMinusOne = 1-h
     hMinusOne[hMinusOne < 1e-315] = 1e-315
     J = (np.log(h)*(-y)-np.log(hMinusOne)*(1-y))
